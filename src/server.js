@@ -1,10 +1,10 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import dotEnv from 'dotenv'
-import mongoose from 'mongoose'
-import './models/store'
-import  './models/produce'
-import api from './routes'
+const express = require('express')
+const bodyParser = require('body-parser')
+const dotEnv = require('dotenv')
+const mongoose = require('mongoose')
+require('./models/store')
+require('./models/produce')
+const api = require('./routes')
 var cors = require('cors')
 const PORT = process.env.PORT || 3001
 

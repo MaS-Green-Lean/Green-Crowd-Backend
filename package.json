@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js --exec babel-node --presets @babel/env"
+    "build": "npm run clean && NODE_ENV=production npm run build-babel",
+    "start": "npm run build && node ./build/server.js",
+    "build-babel": "babel src/ -d ./build",
+    "clean": "rm -rf build && mkdir build",
+    "backend": "nodemon server.js --exec babel-node --presets @babel/env"
   },
   "keywords": [],
   "author": "",
