@@ -1,6 +1,6 @@
 import express from 'express'
-import store from './controllers/store'
-import produce from './controllers/produce'
+import * as store from './controllers/store'
+import * as produce from './controllers/produce'
 
 const router = express.Router()
 
@@ -9,7 +9,18 @@ router.get('/store/:id', store.get)
 router.get('/stores', store.getAll)
 router.post('/store/:id/produce', produce.create)
 router.patch('/store/:id', store.update)
+router.get('/produce', produce.lowestPrice)
 
+if (process.env.NODE_ENV === 'development') {
+  router.use(function(err, req, res) {
+    res.status(err.status || 500)
+    res.render('error', {
+      message: err.message,
+      error: err
+    })
+  })
+
+}
 // router.use((req, res, next) => {
 //   if (res.locals.data) {
 //     let response = Object.assign({}, res.locals.data, {

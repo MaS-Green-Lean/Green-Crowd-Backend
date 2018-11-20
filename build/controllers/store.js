@@ -1,38 +1,50 @@
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.create = create;
+exports.get = get;
+exports.getAll = getAll;
+exports.update = update;
+
 var Store = require('mongoose').model('Store');
 
-module.exports.create = function (req, res, next) {
+function create(req, res, next) {
   if (!req.body.name) {
-    return next(new Error('name of store is required'));
+    return res.status(500).json('name of store is required');
   }
 
   if (!req.body.description) {
-    return next(new Error('description of store required'));
+    return res.status(500).json('description of store required');
   }
 
   if (!req.body.address) {
-    return next(new Error('address of the store is required'));
+    return res.status(500).json('address of the store is required');
+  }
+
+  if (!req.body.location.coordinates) {
+    return res.status(500).json('location coordinates (longitude latitude) are required');
   }
 
   Store.create({
     name: req.body.name,
     description: req.body.description,
-    address: req.body.address
+    address: req.body.address,
+    location: req.body.location
   }, function (err, result) {
     if (err) {
       res.status(500).json('error: ' + err);
-      return next();
     } else {
       res.status(200).json(result);
-      return next();
     }
   });
-};
+  return next();
+}
 
-module.exports.get = function (req, res, next) {
+function get(req, res, next) {
   if (!req.params.id) {
-    return next(new Error('store id is required'));
+    return res.status(500).json('store id is required');
   }
 
   Store.findById(req.params.id).populate({
@@ -40,15 +52,15 @@ module.exports.get = function (req, res, next) {
     model: 'Produce'
   }).exec(function (err, store) {
     if (err) {
-      return next(new Error('error occured: ' + err));
+      return res.status(500).json('error occured: ' + err);
     } else if (store) {
       res.status(200).json(store);
       return next();
     }
   });
-};
+}
 
-module.exports.getAll = function (req, res, next) {
+function getAll(req, res, next) {
   Store.find({}, function (err, stores) {
     if (err) {
       res.status(500).json('error: ' + err);
@@ -58,15 +70,19 @@ module.exports.getAll = function (req, res, next) {
       return next();
     }
   });
-};
+}
 
-module.exports.update = function (req, res, next) {
-  if (!req.body.name && !req.body.address && !req.body.description) {
-    return next(new Error('You must include parameter(s) you would like to update'));
+function update(req, res, next) {
+  if (!req.body.name && !req.body.address && !req.body.description && !req.body.location) {
+    return res.status(500).json('You must include parameter(s) you would like to update');
   }
 
   if (!req.params.id) {
-    return next(new Error('Store id is required to update'));
+    return res.status(500).json('Store id is required to update');
+  }
+
+  if (!req.body.location.type || !req.body.location.coordinates) {
+    return res.status(500).json('Formmating incorrect. type and coordinates are required properties on location.');
   }
 
   Store.findById(req.params.id).exec(function (err, store) {
@@ -85,14 +101,19 @@ module.exports.update = function (req, res, next) {
         store.address = req.body.address;
       }
 
+      if (req.body.location) {
+        store.location = req.body.location;
+      }
+
       store.save(function (err, updated) {
         if (err) {
-          res.status(500).json('Unable to save changes to db');
+          console.error(err);
+          res.status(500).json('Unable to save changes to db ' + err);
         }
 
         res.status(200).json(updated);
         return next();
       });
     }
-  });
-};
+  }); // add get by location
+}

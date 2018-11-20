@@ -1,10 +1,16 @@
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.create = create;
+exports.lowestPrice = lowestPrice;
+
 var Produce = require('mongoose').model('Produce');
 
 var Store = require('mongoose').model('Store');
 
-module.exports.create = function (req, res, next) {
+function create(req, res, next) {
   if (!req.body.name) {
     return next(new Error('Produce name is required'));
   }
@@ -33,20 +39,38 @@ module.exports.create = function (req, res, next) {
     } else {
       Store.findById(req.params.id, function (err, store) {
         if (err) {
-          res.status(500).json('error: ' + err);
-          return next();
+          return next(err);
         } else {
           store.produce.push(produce);
           store.save(function (err, updated) {
             if (err) {
-              res.status(500).json('Unable to save changes to db');
+              next(err);
             }
 
-            res.status(200).json(updated);
+            res.status(201).json(updated);
             return next();
           });
         }
       });
     }
   });
-};
+}
+
+function lowestPrice(req, res, next) {
+  Produce.aggregate([{
+    $group: {
+      _id: '$name',
+      min: {
+        $min: '$price'
+      }
+    }
+  }], function (err, result) {
+    if (err) {
+      console.error(err);
+      next(err);
+    } else {
+      res.status(200).json(result);
+      return next();
+    }
+  });
+}

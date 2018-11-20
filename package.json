@@ -9,7 +9,7 @@
     "start": "npm run build && node ./build/server.js",
     "build-babel": "babel src/ -d ./build",
     "clean": "rm -rf build && mkdir build",
-    "backend": "nodemon server.js --exec babel-node --presets @babel/env"
+    "backend": "nodemon src/server.js --exec babel-node --presets @babel/env"
   },
   "keywords": [],
   "author": "",

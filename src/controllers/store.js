@@ -1,40 +1,43 @@
 const Store = require('mongoose').model('Store')
 
-module.exports.create = (req, res, next) => {
+export function create(req, res, next) {
   if (!req.body.name) {
-    return next(new Error('name of store is required'))
+    return res.status(500).json('name of store is required') // These shouldn't be 500s
   }
   if (!req.body.description) {
-    return next(new Error('description of store required'))
+    return res.status(500).json('description of store required')
   }
   if (!req.body.address) {
-    return next(new Error('address of the store is required'))
+    return res.status(500).json('address of the store is required')
+  }
+  if (!req.body.location.coordinates) {
+    return res.status(500).json('location coordinates (longitude latitude) are required')
   }
 
   Store.create({
     name: req.body.name,
     description: req.body.description,
-    address: req.body.address
+    address: req.body.address,
+    location: req.body.location
   }, (err, result) => {
     if (err) {
-      res.status(500).json('error: ' + err)
-      return next()
+      return next(err)
     } else {
       res.status(200).json(result)
-      return next()
     }
   })
+  return next()
 }
 
-module.exports.get = (req, res, next) => {
+export function get(req, res, next) {
   if (!req.params.id) {
-    return next(new Error('store id is required'))
+    return res.status(500).json('store id is required')
   }
   Store.findById(req.params.id)
     .populate({path: 'produce', model: 'Produce'})
     .exec((err, store) => {
       if (err) {
-        return next(new Error('error occured: ' + err))
+        return next(err)
       } else if (store) {
         res.status(200).json(store)
         return next()
@@ -42,11 +45,10 @@ module.exports.get = (req, res, next) => {
     })
 }
 
-module.exports.getAll = (req, res, next) => {
+export function getAll(req, res, next) {
   Store.find({}, (err, stores) => {
     if (err) {
-      res.status(500).json('error: ' + err)
-      return next()
+      return next(err)
     } else {
       res.status(200).json(stores)
       return next()
@@ -54,16 +56,19 @@ module.exports.getAll = (req, res, next) => {
   })
 }
 
-module.exports.update = (req, res, next) => {
-  if (!req.body.name && !req.body.address && !req.body.description) {
-    return next(new Error('You must include parameter(s) you would like to update'))
+export function update(req, res, next) {
+  if (!req.body.name && !req.body.address && !req.body.description && !req.body.location) {
+    return res.status(500).json('You must include parameter(s) you would like to update')
   }
   if (!req.params.id) {
-    return next(new Error('Store id is required to update'))
+    return res.status(500).json('Store id is required to update')
+  }
+  if (!req.body.location.type || !req.body.location.coordinates) {
+    return res.status(500).json('Formmating incorrect. type and coordinates are required properties on location.')
   }
   Store.findById(req.params.id).exec((err, store) => {
     if (err) {
-      return next(new Error('error occured: ' + err))
+      return next(err)
     } else if (store) {
       if (req.body.name) {
         store.name = req.body.name
@@ -74,13 +79,18 @@ module.exports.update = (req, res, next) => {
       if (req.body.address) {
         store.address = req.body.address
       }
+      if (req.body.location) {
+        store.location = req.body.location
+      }
       store.save((err, updated) => {
         if (err) {
-          res.status(500).json('Unable to save changes to db')
+          return next(err)
         }
         res.status(200).json(updated)
         return next()
       })
     }
   })
+
+  // add get by location
 }

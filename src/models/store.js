@@ -17,6 +17,17 @@ var StoreSchema = new mongoose.Schema({
   produce: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Produce' }],
     required: false
+  },
+  location: {
+    type: {
+      type: String, // Don't do `{ location: { type: String } }`
+      enum: ['Point'], // 'location.type' must be 'Point'
+      required: true
+    },
+    coordinates: {
+      type: [Number], // longitude comes first
+      required: true
+    }
   }
 })
 

@@ -1,7 +1,7 @@
 const Produce = require('mongoose').model('Produce')
 const Store = require('mongoose').model('Store')
 
-module.exports.create = (req, res, next) => {
+export function create(req, res, next) {
   if (!req.body.name) {
     return next(new Error('Produce name is required'))
   }
@@ -23,23 +23,37 @@ module.exports.create = (req, res, next) => {
   })
   produce.save((err, produce) => {
     if (err) {
-      return next(new Error('error: ', err))
+      return next(err)
     } else {
       Store.findById(req.params.id, (err, store) => {
         if (err) {
-          res.status(500).json('error: ' + err)
-          return next()
+          return next(err)
         } else {
           store.produce.push(produce)
           store.save((err, updated) => {
             if (err) {
-              res.status(500).json('Unable to save changes to db')
+              next(err)
             }
-            res.status(200).json(updated)
+            res.status(201).json(updated)
             return next()
           })
         }
       })
+    }
+  })
+}
+
+export function lowestPrice (req, res, next) {
+  Produce.aggregate([
+    {
+      $group: { _id: '$name', min: { $min: '$price'}}
+    }
+  ], (err, result) => {
+    if (err) {
+      next(err)
+    } else {
+      res.status(200).json(result)
+      return next()
     }
   })
 }

@@ -2,19 +2,32 @@
 
 var _express = _interopRequireDefault(require("express"));
 
-var _store = _interopRequireDefault(require("./controllers/store"));
+var store = _interopRequireWildcard(require("./controllers/store"));
 
-var _produce = _interopRequireDefault(require("./controllers/produce"));
+var produce = _interopRequireWildcard(require("./controllers/produce"));
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var router = _express.default.Router();
 
-router.post('/store', _store.default.create);
-router.get('/store/:id', _store.default.get);
-router.get('/stores', _store.default.getAll);
-router.post('/store/:id/produce', _produce.default.create);
-router.patch('/store/:id', _store.default.update); // router.use((req, res, next) => {
+router.post('/store', store.create);
+router.get('/store/:id', store.get);
+router.get('/stores', store.getAll);
+router.post('/store/:id/produce', produce.create);
+router.patch('/store/:id', store.update);
+router.get('/produce', produce.lowestPrice);
+
+if (process.env.NODE_ENV === 'development') {
+  router.use(function (err, req, res) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
+} // router.use((req, res, next) => {
 //   if (res.locals.data) {
 //     let response = Object.assign({}, res.locals.data, {
 //       'status': 'ok'
@@ -36,5 +49,6 @@ router.patch('/store/:id', _store.default.update); // router.use((req, res, next
 //     })
 //   }
 // })
+
 
 module.exports = router;
