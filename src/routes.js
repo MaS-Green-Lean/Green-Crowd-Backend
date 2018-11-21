@@ -1,15 +1,20 @@
 import express from 'express'
-import * as store from './controllers/store'
-import * as produce from './controllers/produce'
+import { create as createStore, get, getAll, update as updateStore} from './controllers/store'
+import { create as createProduce, lowestPrice } from './controllers/produce'
+import { create as createUser, login } from './controllers/users'
+import passport from 'passport'
+import './configs/passport'
 
 const router = express.Router()
 
-router.post('/store', store.create)
-router.get('/store/:id', store.get)
-router.get('/stores', store.getAll)
-router.post('/store/:id/produce', produce.create)
-router.patch('/store/:id', store.update)
-router.get('/produce', produce.lowestPrice)
+router.post('/store', passport.authenticate('jwt', { session:false }), createStore)
+router.get('/store/:id', passport.authenticate('jwt', { session:false }), get)
+router.get('/stores', passport.authenticate('jwt', { session:false }), getAll)
+router.post('/store/:id/produce', passport.authenticate('jwt', { session:false }), createProduce)
+router.patch('/store/:id', passport.authenticate('jwt', { session:false }), updateStore)
+router.get('/produce', passport.authenticate('jwt', { session:false }), lowestPrice)
+router.post('/register', createUser)
+router.post('/login', login)
 
 if (process.env.NODE_ENV === 'development') {
   router.use(function(err, req, res) {

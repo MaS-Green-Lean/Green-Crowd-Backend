@@ -1,6 +1,6 @@
 const Store = require('mongoose').model('Store')
 
-export function create(req, res, next) {
+module.exports.create = (req, res, next) => {
   if (!req.body.name) {
     return res.status(500).json('name of store is required') // These shouldn't be 500s
   }
@@ -29,7 +29,7 @@ export function create(req, res, next) {
   return next()
 }
 
-export function get(req, res, next) {
+module.exports.get = (req, res, next) => {
   if (!req.params.id) {
     return res.status(500).json('store id is required')
   }
@@ -45,7 +45,7 @@ export function get(req, res, next) {
     })
 }
 
-export function getAll(req, res, next) {
+module.exports.getAll = (req, res, next) => {
   Store.find({}, (err, stores) => {
     if (err) {
       return next(err)
@@ -56,7 +56,7 @@ export function getAll(req, res, next) {
   })
 }
 
-export function update(req, res, next) {
+module.exports.update = (req, res, next) => {
   if (!req.body.name && !req.body.address && !req.body.description && !req.body.location) {
     return res.status(500).json('You must include parameter(s) you would like to update')
   }
@@ -66,7 +66,7 @@ export function update(req, res, next) {
   if (!req.body.location.type || !req.body.location.coordinates) {
     return res.status(500).json('Formmating incorrect. type and coordinates are required properties on location.')
   }
-  Store.findById(req.params.id).exec((err, store) => {
+  Store.findById(req.params.id, (err, store) => {
     if (err) {
       return next(err)
     } else if (store) {

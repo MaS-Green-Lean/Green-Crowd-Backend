@@ -4,28 +4,36 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run clean && npm run build-babel",
-    "start": "npm run build && node ./build/server.js",
     "build-babel": "babel src/ -d ./build",
     "clean": "rm -rf build && mkdir build",
-    "backend": "nodemon src/server.js --exec babel-node --presets @babel/env"
+    "dev": "nodemon src/server.js --exec babel-node --presets @babel/env",
+    "start": "npm run build && node ./build/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/runtime": "^7.1.5",
+    "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "dotenv": "^6.1.0",
     "express": "^4.16.4",
-    "mongoose": "^5.3.6"
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.3.6",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
     "@babel/node": "^7.0.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.0.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
+    "babel-eslint": "^10.0.1",
     "eslint": "^5.7.0",
     "nodemon": "^1.18.4"
   }

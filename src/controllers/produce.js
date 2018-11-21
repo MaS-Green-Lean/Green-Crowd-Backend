@@ -1,7 +1,7 @@
 const Produce = require('mongoose').model('Produce')
 const Store = require('mongoose').model('Store')
 
-export function create(req, res, next) {
+module.exports.create = (req, res, next) => {
   if (!req.body.name) {
     return next(new Error('Produce name is required'))
   }
@@ -42,8 +42,7 @@ export function create(req, res, next) {
     }
   })
 }
-
-export function lowestPrice (req, res, next) {
+module.exports.lowestPrice = (req, res, next) => {
   Produce.aggregate([
     {
       $group: { _id: '$name', min: { $min: '$price'}}
