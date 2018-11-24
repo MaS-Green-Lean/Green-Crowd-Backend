@@ -99,6 +99,6 @@ module.exports.updateShoppingList = (req, res, next) => {
 // }
 
 module.exports.getUser = (req, res) => {
-  if (req.user) return res.status(200).json({ jwt: req.user.token })
+  if (req.user) return res.status(200).json({ user: req.user })
   else return res.status(401).json({ msg: 'No token provided, please login or register' })
 }
