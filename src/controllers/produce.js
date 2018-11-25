@@ -42,6 +42,7 @@ module.exports.create = (req, res, next) => {
     }
   })
 }
+
 module.exports.lowestPrice = (req, res, next) => {
   Produce.aggregate([
     {
