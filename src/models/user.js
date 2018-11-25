@@ -32,6 +32,10 @@ var UserSchema = mongoose.Schema({
   },
   shoppingList: {
     type: [String]
+  },
+  storeManaged: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Store' }],
+    required: false
   }
 })
 
@@ -66,7 +70,8 @@ UserSchema.methods.toAuthJSON = function() {
     email: this.email,
     fullname: this.fullname,
     token: this.generateJWT(),
-    role: this.role
+    role: this.role,
+    storeManaged: this.storeManaged
   }
 }
 

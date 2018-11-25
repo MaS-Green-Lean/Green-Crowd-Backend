@@ -13,12 +13,16 @@ module.exports.create = (req, res, next) => {
   if (!req.body.password) {
     return res.status(422).json({ msg: 'Password is required' })
   }
+  if (req.body.role && !req.body.storeManaged) {
+    return res.status(422).json({ msg: 'The manager"s store is required' })
+  }
   const userData = {
     email: req.body.email,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     password: req.body.password,
-    role: req.body?.role
+    role: req.body?.role,
+    storeManaged: req.body?.storeManaged
   }
   User.create(userData, (err, user) => {
     if (err) {
