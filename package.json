@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run clean && npm run build-babel",
-    "build-babel": "babel src/ -d ./build",
+    "build-babel": "babel --presets @babel/env src -d build",
     "clean": "rm -rf build && mkdir build",
     "dev": "nodemon src/server.js --exec babel-node --presets @babel/env",
     "start": "npm run build && node ./build/server.js"
