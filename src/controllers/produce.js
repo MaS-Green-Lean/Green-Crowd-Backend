@@ -43,6 +43,39 @@ module.exports.create = (req, res, next) => {
   })
 }
 
+module.exports.deleteProduce = (req, res, next) => {
+  if (!req.params.id) {
+    return res.status(422).json({ msg: 'The ID of the produce is required.' })
+  }
+
+  Produce.findByIdAndDelete(req.params.id, (err, result) => {
+    if (err) {
+      next(err)
+    } else {
+      res.status(202).json({ item: result })
+      return next()
+    }
+  })
+}
+
+module.exports.updateProduce = (req, res, next) => {
+  if (!req.params.id) {
+    return res.status(422).json({ msg: 'The ID of the produce is required.' })
+  }
+  if (!req.body) {
+    return res.status(422).json({ msg: 'You did not send any data to update' })
+  }
+
+  Produce.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, item) => {
+    if (err) {
+      next(err)
+    } else {
+      res.status(200).json({ item: item })
+      return next()
+    }
+  })
+}
+
 module.exports.lowestPrice = (req, res, next) => {
   Produce.aggregate([
     {

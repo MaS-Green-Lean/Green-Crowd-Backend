@@ -1,6 +1,6 @@
 import express from 'express'
 import { create as createStore, get, getAll, update as updateStore} from './controllers/store'
-import { create as createProduce, lowestPrice } from './controllers/produce'
+import { create as createProduce, lowestPrice, deleteProduce, updateProduce } from './controllers/produce'
 import { create as createUser, login, getUser } from './controllers/users'
 import passport from 'passport'
 import './configs/passport'
@@ -11,8 +11,11 @@ router.post('/store', passport.authenticate('jwt', { session: false }), createSt
 router.get('/store/:id', passport.authenticate('jwt', { session: false }), get)
 router.get('/stores', passport.authenticate('jwt', { session: false }), getAll)
 router.post('/store/:id/produce', passport.authenticate('jwt', { session: false }), createProduce)
+router.delete('/store/:id/produce')
 router.patch('/store/:id', passport.authenticate('jwt', { session: false }), updateStore)
 router.get('/produce', passport.authenticate('jwt', { session: false }), lowestPrice)
+router.delete('/produce/:id', passport.authenticate('jwt', { session: false }), deleteProduce)
+router.patch('/produce/:id', passport.authenticate('jwt', { session: false }), updateProduce)
 router.get('/user', passport.authenticate('jwt', { session: false }), getUser)
 router.post('/register', createUser)
 router.post('/login', login)
